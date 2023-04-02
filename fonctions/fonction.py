@@ -6,7 +6,7 @@ CORRECTION_RATIO = 1.6
 from math import floor
 from numpy import random
 from constante.Setting import CamConstante
-
+#test_commit
 
 class DrawingTexte():
     def __init__(self,fenetre) -> None:

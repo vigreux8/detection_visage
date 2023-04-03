@@ -5,13 +5,36 @@ class ImagePatch:
     imagetracerPath = path.join("image","casque_b_to_b.png")
     cascadeClassifierPatch = path.join("utils","haarcascade_frontalface_default.xml")
 
-class Setting_main:
+
+
+class SettingMain:
+    """
+    Paramétre globale de l'application 
+    
+    
+    FPS: Nombre d'image ou la fenetre et rafraichis 
+    
+    CAMERA : active/Desactive la caméra
+    [
+        Prend uniquement True or False
+    ]
+    
+    
+    DEFINITION_CAMERA :
+    !!! Définition elever = Programme lents !!!
+            1 = 1080p,
+            2= 720p,
+            3= taille standart (PLUS Rapide)
+    
+    TEXTE : Texte afficher sur l'écrant
+       
+    """
     FPS =60
-    CAMERA = True
-    #1 = 1080p, 2= 720p #other desatfiver
-    DEFINITION = 2
-    DEFINITION_CHOISIS =""
-    
-class CamConstante:
-    CONSTANTE_1 = 1
-    
+    CAMERA = False
+    DEFINITION_CAMERA = None
+    TEXTE =[
+        "Texte_1",
+        "Texte_2",
+        "Texte_3",
+        "ect..."
+             ]

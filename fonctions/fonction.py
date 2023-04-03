@@ -1,25 +1,14 @@
 import pygame 
 from numpy import random
 import cv2
-from constante.Setting import Setting_main,ImagePatch
-CORRECTION_RATIO = 1.6
+from constante.Setting import SettingMain,ImagePatch
+CORRECTION_RATIO = 0.5
 from math import floor
 from numpy import random
-from constante.Setting import CamConstante
-#test_commit
 
 class DrawingTexte():
     def __init__(self,fenetre) -> None:
-        self.texte = [
-             "Avec le casque obh",
-             "Rouler en tout sécuriter",
-             "1 casque = sécuriter",
-             "0 casque = danger",
-             "OBH facilite l'usage du casque",
-             "le casque vous va à ravire !",
-             "OBH, la ceinture de sécuriter pour votre vélos",
-             "mieux vaut prévenir que mourir"
-             ]
+        self.texte = SettingMain.TEXTE
         self.fenetre = fenetre
         self.witch = self.fenetre.get_width()
         self.height = self.fenetre.get_height()
@@ -53,31 +42,29 @@ class DrawingTexte():
         else:
             return index_actuelle +1
 
-
 class TraitementImage:
-
 
     def mise_a_l_echelle_fenetre(image_background:object,image_a_modifier:object):
         if image_a_modifier.shape[1] < image_background.shape[1]:
-            ratio =(image_background.shape[1]/image_a_modifier.shape[1])/CORRECTION_RATIO
+            ratio =(image_background.shape[1]/image_a_modifier.shape[1])
             print("ratio si inférieur",ratio)
             # print("image a modifier = ",image_a_modifier.shape[1])
             # print("image a background = ",image_background.shape[1])
             # print("ratio= ",ratio)
             x,y=round(image_a_modifier.shape[1]/ratio),round(image_a_modifier.shape[0]/ratio)
         else:
-            ratio = (image_background.shape[1]/image_a_modifier.shape[1])/CORRECTION_RATIO
+            ratio = (image_background.shape[1]/image_a_modifier.shape[1])
             print("ratio si superieur",ratio)
             x,y =round(image_a_modifier.shape[1]*ratio),round(image_a_modifier.shape[0]*ratio)
         return x,y
 
-    def mise_a_l_echelle_pygame_img_visage(background_width,visage_width:int,image_a_modifier:object,):
+    def mise_a_l_echelle_pygame_img_visage(background_width,visage_width:int,image_a_modifier:object):
         ratio = background_width/visage_width
         image_a_modifier = pygame.transform.scale(image_a_modifier,(image_a_modifier.get_width()/ratio,image_a_modifier.get_height()/ratio))
         return image_a_modifier
 
     def preset_definition_video():
-        mode = Setting_main.DEFINITION
+        mode = SettingMain.DEFINITION_CAMERA
         if mode == 1:
             return 1920,1080
         if mode == 2:
@@ -85,7 +72,6 @@ class TraitementImage:
         else :
             return False
     
-
 class Detection_visage:
     def recuperation_visage(frame):
         # print("frame",frame)
@@ -123,33 +109,37 @@ class gestion_du_temps:
 class initilisation_programme:
     def __init__(self) -> None:
         pygame.init()
-        self.constante = CamConstante
         self.clock = pygame.time.Clock()
         self.temps = gestion_du_temps()
-        self.image_principale_cv2 =""
-        self.image_principale_pygame=""
-        self.SCREEN_HEIGHT =""
-        self.SCREEN_WIDTH =""
-        if Setting_main.CAMERA:
+        self.image_principale_cv2 =None
+        self.image_principale_pygame = None
+        self.SCREEN_HEIGHT = None
+        self.SCREEN_WIDTH = None
+        self.flux_video = None
+        self.detecte_face = None
+        self.image_tracer_pygame = None
+        self.index_phrase = 0
+        self.init_set_size_pygame_screen_if_image_or_video()
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT)) 
+        self.image_tracer_cv2 = cv2.imread(ImagePatch.imagetracerPath)
+        self.init_mise_a_l_echelle_image_tracer()
+        self.stylo = DrawingTexte(self.screen)
+        self.detecte_face = Detection_visage.recuperation_visage(self.image_principale_cv2)
+
+
+    def init_set_size_pygame_screen_if_image_or_video(self):
+        if SettingMain.CAMERA:
             # print("condition")
             self.flux_video = cv2.VideoCapture(0)
             self.set_size_video()
         else : 
             self.image_principale_cv2 = cv2.imread(ImagePatch.imagefixePath)
-            self.set_pygame_size_image()
-            self.detecte_face = Detection_visage.recuperation_visage(self.image_principale_cv2)
-        # print("tuple taille écrant:",(self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT)) 
-        self.image_tracer_cv2 = cv2.imread(ImagePatch.imagetracerPath)
-        self.image_tracer_pygame = ""
-        self.init_mise_a_l_echelle_image_tracer()
-        self.stylo =  DrawingTexte(self.screen)
-        self.index_phrase = 0
-        
+            self.SCREEN_HEIGHT,self.SCREEN_WIDTH = self.image_principale_cv2.shape[0:2]
 
+    
     def set_size_video(self):  
         print("size_video")          
-        if Setting_main.DEFINITION in (1,2):
+        if SettingMain.DEFINITION_CAMERA in (1,2):
             width,height=TraitementImage.preset_definition_video()
             self.flux_video.set(cv2.CAP_PROP_FRAME_WIDTH,width)
             self.flux_video.set(cv2.CAP_PROP_FRAME_HEIGHT,height)
@@ -164,8 +154,6 @@ class initilisation_programme:
             # print("screen_height set size video :",self.SCREEN_HEIGHT)
             # print("screen_witch set size video :",self.SCREEN_WIDTH)
             
-    def set_pygame_size_image(self):
-        self.SCREEN_HEIGHT,self.SCREEN_WIDTH = self.image_principale_cv2.shape[0:2]
         
     def init_mise_a_l_echelle_image_tracer(self):
         new_whith,new_height =  TraitementImage.mise_a_l_echelle_fenetre(self.image_principale_cv2,self.image_tracer_cv2)
@@ -197,7 +185,7 @@ class initilisation_programme:
         # frame = pygame.transform.flip(frame,True,False)
         
     def run(self):
-        if not Setting_main.CAMERA:
+        if not SettingMain.CAMERA:
             # print("image_cv2 :",self.image_principale_cv2)
             self.detect_visage()
             self.conv_img_cv2_to_pygame()
@@ -205,13 +193,13 @@ class initilisation_programme:
         while True:
             # print("boucle")
             self.afficher_texte()
-            if Setting_main.CAMERA :
+            if SettingMain.CAMERA :
                 self.read_webcam()
                 self.detect_visage()
                 self.conv_img_cv2_to_pygame()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    if Setting_main.CAMERA:
+                    if SettingMain.CAMERA:
                         self.flux_video.release()
                     pygame.quit()
                     exit()
@@ -219,8 +207,8 @@ class initilisation_programme:
             self.stylo.texte_drawing(self.stylo.texte[self.index_phrase])
             for (x,y,visage_witch,visage_height) in self.detecte_face:
                 casque = TraitementImage.mise_a_l_echelle_pygame_img_visage(self.SCREEN_WIDTH,visage_witch,self.image_tracer_pygame)
-                self.screen.blit(casque,(self.SCREEN_WIDTH-x-casque.get_width()/1,y-casque.get_height()/1.8))
+                self.screen.blit(casque,(x,y-110))
                 pygame.display.update()
             pygame.display.flip()
-            self.clock.tick(Setting_main.FPS)
+            self.clock.tick(SettingMain.FPS)
             

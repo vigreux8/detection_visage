@@ -60,8 +60,7 @@ class TraitementImage:
 
     def mise_a_l_echelle_pygame_img_visage(background_width,visage_width:int,image_a_modifier:object):
         ratio = background_width/visage_width
-        image_a_modifier = pygame.transform.scale(image_a_modifier,(image_a_modifier.get_width()/ratio,image_a_modifier.get_height()/ratio))
-        print("ratio:",ratio)       
+        image_a_modifier = pygame.transform.scale(image_a_modifier,(image_a_modifier.get_width()/ratio,image_a_modifier.get_height()/ratio))     
         return image_a_modifier
 
     def preset_definition_video():
@@ -78,7 +77,7 @@ class Detection_visage:
         # print("frame",frame)
         cascadeClassifier = cv2.CascadeClassifier(ImagePatch.cascadeClassifierPatch)
         frame_grey = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-        detecte_face = cascadeClassifier.detectMultiScale(frame_grey,minSize=(20, 20),maxSize=(500,500))
+        detecte_face = cascadeClassifier.detectMultiScale(frame_grey)
         # print("detecte_face",detecte_face)
         # faces = []
         # for (x_cv2, y_cv2, w_cv2, h_cv2) in detecte_face:
@@ -207,9 +206,11 @@ class initilisation_programme:
             self.screen.blit(self.image_principale_pygame,(0, 0))
             self.stylo.texte_drawing(self.stylo.texte[self.index_phrase])
             for (x,y,visage_witch,visage_height) in self.detecte_face:
+                print("x=",x)
                 casque = TraitementImage.mise_a_l_echelle_pygame_img_visage(self.SCREEN_WIDTH,visage_witch,self.image_tracer_pygame)
-                self.screen.blit(casque,(x,y-50))
-                pygame.display.update()
+                x = ((x-self.SCREEN_WIDTH)*-1)-casque.get_width()
+                self.screen.blit(casque,(x,y-70))
+            pygame.display.update()
             pygame.display.flip()
             self.clock.tick(SettingMain.FPS)
             

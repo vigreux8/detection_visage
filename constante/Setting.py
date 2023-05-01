@@ -29,8 +29,8 @@ class SettingMain:
     TEXTE : Texte afficher sur l'écrant
        
     """
-    FPS =60
-    CAMERA = False
+    FPS =30
+    CAMERA = True
     DEFINITION_CAMERA = None
     TEXTE =[
         "Texte_1",

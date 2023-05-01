@@ -61,6 +61,7 @@ class TraitementImage:
     def mise_a_l_echelle_pygame_img_visage(background_width,visage_width:int,image_a_modifier:object):
         ratio = background_width/visage_width
         image_a_modifier = pygame.transform.scale(image_a_modifier,(image_a_modifier.get_width()/ratio,image_a_modifier.get_height()/ratio))
+        print("ratio:",ratio)       
         return image_a_modifier
 
     def preset_definition_video():
@@ -180,9 +181,9 @@ class initilisation_programme:
         
         
     def test_detection_visage(self):
-         detecte = Detection_visage.recuperation_visage(self.image_principale_cv2)
+        detecte = Detection_visage.recuperation_visage(self.image_principale_cv2)
         #  print("detecte :",detecte)
-        # frame = pygame.transform.flip(frame,True,False)
+        frame = pygame.transform.flip(frame,True,False)
         
     def run(self):
         if not SettingMain.CAMERA:
@@ -207,7 +208,7 @@ class initilisation_programme:
             self.stylo.texte_drawing(self.stylo.texte[self.index_phrase])
             for (x,y,visage_witch,visage_height) in self.detecte_face:
                 casque = TraitementImage.mise_a_l_echelle_pygame_img_visage(self.SCREEN_WIDTH,visage_witch,self.image_tracer_pygame)
-                self.screen.blit(casque,(x,y-110))
+                self.screen.blit(casque,(x,y-50))
                 pygame.display.update()
             pygame.display.flip()
             self.clock.tick(SettingMain.FPS)

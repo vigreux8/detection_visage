@@ -1,7 +1,7 @@
 from os import path
 
 class ImagePatch:
-    imagefixePath =  path.join("image","_test.png")
+    imagefixePath =  path.join("image","groupe_inconnue.jpg")
     imagetracerPath = path.join("image","casque_3d_rezize.png")
     cascadeClassifierPatch = path.join("utils","haarcascade_frontalface_default.xml")
 
@@ -30,7 +30,7 @@ class SettingMain:
        
     """
     FPS =60
-    CAMERA = True
+    CAMERA = False
     DEFINITION_CAMERA = None
     TEXTE =[
         "Texte_1",
